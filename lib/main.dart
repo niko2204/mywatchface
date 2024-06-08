@@ -32,13 +32,15 @@ class MyWatchFace extends StatefulWidget {
 class _MyWatchFaceState extends State<MyWatchFace> {
   late Timer _timer;
   DateTime _dateTime = DateTime.now();
-  String _data = ''; // 웹 페이지의 내용을 저장할 변수
+  String _dataM = ''; // 웹 페이지의 내용을 저장할 변수
+  String _dataS = ''; // 웹 페이지의 내용을 저장할 변수
 
   @override
   void initState() {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
     _fetchData(); // initState에서 _fetchData 메서드를 호출
+    _timer = Timer.periodic(const Duration(hours: 6), (Timer t) => _fetchData());
   }
 
   void _getTime() {
@@ -66,12 +68,13 @@ class _MyWatchFaceState extends State<MyWatchFace> {
 
             if (mainElements.length > 1 && menuElements.length > 1) {
               setState(() {
-                _data = 'Main: ${mainElements[1].text}, Menu: ${menuElements[1].text}';
+                _dataM = '<${mainElements[1].text}>';
+                _dataS =  '(${menuElements[1].text})';
 
               });
             }
           }
-          print(_data);
+          print(_dataM+_dataS);
           break; // Exit the loop once the desired date is found
         }
       }
@@ -113,9 +116,18 @@ class _MyWatchFaceState extends State<MyWatchFace> {
             ),
           ),
           Text(
-            _data, // 웹 페이지의 내용을 표시
+            _dataM, // 웹 페이지의 내용을 표시
             style: const TextStyle(
               fontSize: 10,
+              fontWeight: FontWeight.w100,
+              color: Colors.white,
+              decoration: TextDecoration.none,
+            ),
+          ),
+          Text(
+            _dataS, // 웹 페이지의 내용을 표시
+            style: const TextStyle(
+              fontSize: 8,
               fontWeight: FontWeight.w100,
               color: Colors.blue,
               decoration: TextDecoration.none,

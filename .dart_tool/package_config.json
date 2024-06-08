@@ -194,13 +194,19 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "workmanager",
+      "rootUri": "file:///Users/youngholee/.pub-cache/hosted/pub.dev/workmanager-0.4.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "mywatchface",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     }
   ],
-  "generated": "2024-06-08T11:13:20.332670Z",
+  "generated": "2024-06-08T13:10:42.350027Z",
   "generator": "pub",
   "generatorVersion": "3.3.1"
 }
