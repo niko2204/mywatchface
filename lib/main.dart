@@ -52,20 +52,27 @@ class _MyWatchFaceState extends State<MyWatchFace> {
 
     if (response.statusCode == 200) {
       dom.Document document = parser.parse(response.body);
-      String today = DateTime.now().toString().substring(5, 10).replaceAll('-', '.'); // Get today's date in 'mm.dd' format
-      dom.Element? dateElement = document.querySelector('.date:contains("$today")'); // Select the span with class 'date' and text of today's date
+      String today = "${DateTime.now().month.toString().padLeft(2, '0')}.${DateTime.now().day.toString().padLeft(2, '0')}"; // Get today's date in 'mm.dd' format
+      today = '06.05'; // 테스트를 위해 임의로 날짜를 변경
 
-      if (dateElement != null) {
-        dom.Element? parentElement = dateElement.parent?.parent?.parent; // Get the parent 'li' element
-        if (parentElement != null) {
-          dom.Element? mainElement = parentElement.querySelector('.main'); // Select the div with class 'main' under the 'li' element
-          dom.Element? menuElement = parentElement.querySelector('.menu'); // Select the div with class 'menu' under the 'li' element
+      List<dom.Element> dateElements = document.querySelectorAll('.date'); // Select all spans with class 'date'
 
-          if (mainElement != null && menuElement != null) {
-            setState(() {
-              _data = 'Main: ${mainElement.text}, Menu: ${menuElement.text}';
-            });
+      for (var dateElement in dateElements) {
+        if (dateElement.text == today) { // Check if the text of the span is today's date
+          dom.Element? parentElement = dateElement.parent?.parent?.parent; // Get the parent 'li' element
+          if (parentElement != null) {
+            List<dom.Element> mainElements = parentElement.querySelectorAll('.main'); // Select all divs with class 'main' under the 'li' element
+            List<dom.Element> menuElements = parentElement.querySelectorAll('.menu'); // Select all divs with class 'menu' under the 'li' element
+
+            if (mainElements.length > 1 && menuElements.length > 1) {
+              setState(() {
+                _data = 'Main: ${mainElements[1].text}, Menu: ${menuElements[1].text}';
+
+              });
+            }
           }
+          print(_data);
+          break; // Exit the loop once the desired date is found
         }
       }
     } else {
