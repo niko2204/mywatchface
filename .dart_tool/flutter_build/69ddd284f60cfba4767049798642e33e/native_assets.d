@@ -1,0 +1,1 @@
+ /Users/youngholee/Documents/Dev/flutterProjects/mywatchface/.dart_tool/flutter_build/69ddd284f60cfba4767049798642e33e/native_assets.yaml: 
