@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'dart:async';
+import 'package:html/parser.dart' as parser;
+import 'package:html/dom.dart' as dom;
 
 void main() {
   runApp(const MyApp());
@@ -29,11 +32,13 @@ class MyWatchFace extends StatefulWidget {
 class _MyWatchFaceState extends State<MyWatchFace> {
   late Timer _timer;
   DateTime _dateTime = DateTime.now();
+  String _data = ''; // 웹 페이지의 내용을 저장할 변수
 
   @override
   void initState() {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
+    _fetchData(); // initState에서 _fetchData 메서드를 호출
   }
 
   void _getTime() {
@@ -42,12 +47,37 @@ class _MyWatchFaceState extends State<MyWatchFace> {
     });
   }
 
+  Future<void> _fetchData() async {
+    final response = await http.get(Uri.parse('https://www.mokpo.ac.kr/www/275/subview.do'));
+
+    if (response.statusCode == 200) {
+      dom.Document document = parser.parse(response.body);
+      String today = DateTime.now().toString().substring(5, 10).replaceAll('-', '.'); // Get today's date in 'mm.dd' format
+      dom.Element? dateElement = document.querySelector('.date:contains("$today")'); // Select the span with class 'date' and text of today's date
+
+      if (dateElement != null) {
+        dom.Element? parentElement = dateElement.parent?.parent?.parent; // Get the parent 'li' element
+        if (parentElement != null) {
+          dom.Element? mainElement = parentElement.querySelector('.main'); // Select the div with class 'main' under the 'li' element
+          dom.Element? menuElement = parentElement.querySelector('.menu'); // Select the div with class 'menu' under the 'li' element
+
+          if (mainElement != null && menuElement != null) {
+            setState(() {
+              _data = 'Main: ${mainElement.text}, Menu: ${menuElement.text}';
+            });
+          }
+        }
+      }
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
   @override
   void dispose() {
     _timer.cancel();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +102,16 @@ class _MyWatchFaceState extends State<MyWatchFace> {
               fontWeight: FontWeight.bold,
               color: Colors.red,
               decoration: TextDecoration.none,
-              height: 2,
+
+            ),
+          ),
+          Text(
+            _data, // 웹 페이지의 내용을 표시
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w100,
+              color: Colors.blue,
+              decoration: TextDecoration.none,
             ),
           ),
           const Text(
@@ -80,7 +119,7 @@ class _MyWatchFaceState extends State<MyWatchFace> {
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w100,
-              color: Colors.blue,
+              color: Colors.white,
               decoration: TextDecoration.none,
             ),
           ),
